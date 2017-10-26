@@ -4,6 +4,8 @@
 // Construct sorted sequences and call functions that 
 //   process the sorted sequences.
 
+// Edited by Chandler Haukap 26 October 2017
+
 
 #include "RandomUtilities.h"
 #include "ContainerPrinting.h"
@@ -63,8 +65,49 @@ getWords(size_t numWords, size_t wordLength, string alphabet)
 double
 mostIsolated(vector<double> & number)
 {
-	// STUB  STUB  STUB
-	return -123.456;
+	//If the vector has one entry, it is the most isolated.
+	//If the vector has 2 entries, they are equally isolated.
+	//Therefore returns number[0] in either case.
+	if (number.size() <= 2)
+	{
+		return number[0];
+	}
+
+	double distance = number[1] - number[0]; //initialize distance to the distance between the first and the second
+	int index(0); //Initially number[0] is the most isolated
+	double upper(0); //will store the upper difference
+	double lower(0); //will store the lower distance
+	lower = (number[1] - number[0]); //lower is by default the distnce between number[0] and number[1]
+	int end = number.size() - 1; //stores the final index of the vector
+
+	for (int i = 1; i < end; i++)
+	{
+		upper = (number[i + 1] - number[i]); //upper diference is the next value minus the current value
+		if (upper > distance) //if upper is greater than the current distance
+		{
+			if (lower > distance) //If both neighbors are farther than the current farthest
+			{
+				if (lower > upper) //determine which is greater; the nearest neighbor is the other one
+				{
+					distance = upper; //this is the new greatest difference
+					index = i; //this is the new index
+				}
+				else
+				{
+					distance = lower; //this is the new greatest difference
+					index = i; //this is the new index
+				}
+			}
+		}
+		lower = upper; //avoids arithmatic by assigning lower to upper before upper is increased
+	}
+
+	if (upper > distance) //Corner case at the end of the vector because it only has 1 neighbor
+	{
+		index = end; 
+	}
+
+	return number[index];
 }
 
 
@@ -74,8 +117,39 @@ mostIsolated(vector<double> & number)
 int
 unmatched(list<string> & A, list<string> & B)
 {
-	// STUB  STUB  STUB
-	return -1;
+	bool more(true); //Loop control
+	int nonmatches(0); //counts the values that have no match
+
+	while (more)
+	{
+		if (A.empty()) //If A is empty then there are no numbers to count
+		{
+			more = false;
+		}
+		else if (B.empty()) //If B is empty before A then the rest of A is unmatched
+		{
+			nonmatches += A.size();
+			more = false;
+		}
+		else
+		{
+			if (B.front() > A.front()) //If B is greater than A
+			{
+				A.pop_front(); //Pop A to increase its value
+				nonmatches++; //That value of A did not have a match
+			}
+			else if (B.front() == A.front()) //If the numbers are the same
+			{
+				A.pop_front(); //A has a match
+			}
+			else
+			{
+				B.pop_front(); //Pop B to increase its value
+			}
+		}
+	}
+
+	return nonmatches;
 }
 
 
@@ -117,7 +191,6 @@ main()
 			<< "calculated in " << time() << " seconds"
 			<< endl << endl;
 	}
-
 
 	cout << endl << endl;
 	cout << "Count the unmatched words" << endl
